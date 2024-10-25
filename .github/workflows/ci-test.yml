@@ -3,9 +3,11 @@ run-name: 'CI tests'
 
 on:
   push:
-    branches: [ main ]
+    branches: 
+      - main
   pull_request:
-    branches: [ main ]
+    branches: 
+      - main
   workflow_dispatch:
 env:
   ANGULAR_CLI_VERSION: 13
