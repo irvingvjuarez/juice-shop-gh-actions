@@ -51,3 +51,42 @@ jobs:
           npm run lint:config -- -f ./config/quiet.yml &&
           npm run lint:config -- -f ./config/tutorial.yml &&
           npm run lint:config -- -f ./config/unsafe.yml
+    
+  test:
+    name: 'test'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Checkout'
+        uses: actions/checkout@v3.4.0
+
+      - name: 'Setup Node.js'
+        uses: actions/setup-node@v3.6.0
+        with:
+          node-version: '18'
+
+      - name: 'Install Angular CLI'
+        run: npm install -g @angular/cli@$ANGULAR_CLI_VERSION
+
+      - name: 'Install dependencies'
+        run: npm install
+
+      - name: "Running unit tests"
+        uses: nick-invision/retry@v2.8.3
+        with:
+          timeout_minutes: 15
+          max_attempts: 3
+          command: npm test
+      
+      - name: "Copy unit testing reports"
+        run: |
+          cp build/reports/coverage/frontend-tests/lcov.info frontend-lcov.info
+          cp build/reports/coverage/server-tests/lcov.info server-lcov.info
+
+      - name: "Upload test coverage information"
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: unit-test-lcov
+          path: |
+            frontend-lcov.info
+            server-lcov.info
